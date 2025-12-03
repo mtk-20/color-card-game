@@ -11,17 +11,20 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USERS")
-public class User {
+@Table(name = "DAILY_PRIZE")
+public class DailyPrize {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "NAME")
-    private String name;
+    @Column(name = "DAY")
+    private Integer day;
 
-    @Column(name = "PHONE_NUMBER")
-    private String phoneNumber;
+    @Column(name = "AVAILABLE_QUANTITY")
+    private Integer availableQuantity;
+
+    @ManyToOne
+    private Prize prize;
 }

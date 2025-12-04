@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "PRIZES")
+@Table(name = "PRIZE")
 public class Prize {
 
     @Id
@@ -19,9 +19,9 @@ public class Prize {
     @Column(name = "ID")
     private Long id;
 
-    @Column(name = "RANK")
-    private int rank;
+    @Column(name = "PRIZE_RANK")
+    private int prizeRank;
 
-    @Column(name = "NAME")
-    private String name;
+    @Column(name = "PRIZE_NAME")
+    private String prizeName;
 }

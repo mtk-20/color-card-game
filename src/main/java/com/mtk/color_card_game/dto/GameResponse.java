@@ -1,13 +1,6 @@
 package com.mtk.color_card_game.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
 
-@Getter
-@Setter
-public class GameResponse {
-
-    private String color;
-    private String pattern;
-    private int rank;
+public record GameResponse(String pattern, List<String> colorCards, int rank) {
 }

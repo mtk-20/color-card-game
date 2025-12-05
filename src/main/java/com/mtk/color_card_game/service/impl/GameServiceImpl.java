@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +32,17 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public GameResponse playGame(GameRequest request) {
+
+        LocalDate day = LocalDate.now();
+        int dayNo = getEventDay(day);
+
+        try {
+            if (dayNo == -1) {
+                log.info("Event Completed.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
 
         Color userColor;
         try {
@@ -91,5 +103,21 @@ public class GameServiceImpl implements GameService {
                 showCards.stream().map(Enum::name).collect(Collectors.toList()),
                 prizeRank,
                 description);
+    }
+
+    private int getEventDay(LocalDate day) {
+        LocalDate day1 = LocalDate.of(2025, 12, 5);
+        LocalDate day2 = day1.plusDays(1);
+        LocalDate day3 = day2.plusDays(1);
+
+        if (day.isEqual(day1))
+            return 1;
+
+        if (day.isEqual(day2))
+            return 2;
+
+        if (day.isEqual(day3))
+            return 3;
+        return -1;
     }
 }

@@ -24,4 +24,7 @@ public class Prize {
 
     @Column(name = "PRIZE_NAME")
     private String prizeName;
+
+    @Column(name = "QUANTITY")
+    private int quantity;
 }

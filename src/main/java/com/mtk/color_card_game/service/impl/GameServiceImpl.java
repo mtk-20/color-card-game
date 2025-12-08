@@ -115,8 +115,8 @@ public class GameServiceImpl implements GameService {
         prizeRepo.save(prize);
         dailyPrizeRepo.save(chosenPrize);
 
-        String description = "Congratulations! You won Rank [" + prizeRank + "] Prize. Prize ID: "
-                + chosenPrize.getPrize().getId() + " "
+        String description = "Congratulations! You won Rank [" + prizeRank + "] Prize. Prize ID: ["
+                + chosenPrize.getPrize().getId() + "]. " + "Prize Name: "
                 + chosenPrize.getPrize().getPrizeName();
 
         return new GameResponse(

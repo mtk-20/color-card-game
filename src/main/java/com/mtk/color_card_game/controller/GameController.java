@@ -20,7 +20,6 @@ public class GameController {
     @PostMapping
     public ResponseEntity<?> handlePlayGame(@RequestBody GameRequest request) {
         GameResponse response = service.playGame(request);
-
         return ResponseEntity.ok(response);
     }
 }

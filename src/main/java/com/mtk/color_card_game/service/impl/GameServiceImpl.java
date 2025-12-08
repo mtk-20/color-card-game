@@ -4,6 +4,7 @@ import com.mtk.color_card_game.common.exception.CommonException;
 import com.mtk.color_card_game.dto.GameRequest;
 import com.mtk.color_card_game.dto.GameResponse;
 import com.mtk.color_card_game.entity.DailyPrize;
+import com.mtk.color_card_game.entity.Prize;
 import com.mtk.color_card_game.repo.DailyPrizeRepo;
 import com.mtk.color_card_game.repo.PrizeRepo;
 import com.mtk.color_card_game.repo.UserRepo;
@@ -59,7 +60,7 @@ public class GameServiceImpl implements GameService {
 
         Color userColor;
         try {
-            userColor = Color.valueOf(request.color().toUpperCase());
+            userColor = Color.valueOf(request.getColor().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid color. Choose ORANGE, GREEN, or BLUE.");
         }
@@ -108,6 +109,11 @@ public class GameServiceImpl implements GameService {
 
         DailyPrize chosenPrize = pickRandomPrize(availablePrizes, prizeRank);
         chosenPrize.setAvailableQuantity(chosenPrize.getAvailableQuantity() - 1);
+
+        Prize prize = chosenPrize.getPrize();
+        prize.setQuantity(prize.getQuantity() - 1);
+
+        prizeRepo.save(prize);
         dailyPrizeRepo.save(chosenPrize);
 
         String description = "Congratulations! You won Rank [" + prizeRank + "] Prize. Prize ID: "

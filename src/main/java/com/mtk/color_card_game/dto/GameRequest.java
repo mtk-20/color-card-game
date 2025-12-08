@@ -9,6 +9,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameRequest {
 
-    String userId;
-    String color;
+    private String userId;
+    private String color;
 }

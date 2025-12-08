@@ -6,12 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface DailyPrizeRepo extends JpaRepository<DailyPrize, Long> {
 
     List<DailyPrize> findByDay(int day);
 
     @Query("SELECT p FROM DailyPrize p WHERE p.day = :day AND p.prize.id = :prizeId")
-    Optional<DailyPrize> findByDayAndPrizeId(@Param("day") int day, @Param("prizeId") Long prizeId);
+    List<DailyPrize> findByDayAndPrizeId(@Param("day") int day, @Param("prizeId") Long prizeId);
+
+    @Query("SELECT p FROM DailyPrize p WHERE p.day = :day AND p.prize.rank = :rank")
+    List<DailyPrize> findByDayAndRank(@Param("day") int day, @Param("rank") int rank);
 }

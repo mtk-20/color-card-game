@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -48,7 +47,7 @@ public class GameServiceImpl implements GameService {
         }
 
         List<DailyPrize> prizes = dailyPrizeRepo.findByDay(dayNo);
-        List<DailyPrize> availablePrizes = prizes.stream().filter(a -> a.getAvailableQuantity() > 0).collect(Collectors.toList());
+        List<DailyPrize> availablePrizes = prizes.stream().filter(a -> a.getAvailableQuantity() > 0).toList();
 
         try {
             if (availablePrizes.isEmpty()) {
@@ -122,7 +121,7 @@ public class GameServiceImpl implements GameService {
 
         return new GameResponse(
                 patternType,
-                showCards.stream().map(Enum::name).collect(Collectors.toList()),
+                showCards.stream().map(Enum::name).toList(),
                 prizeRank,
                 description
         );
@@ -133,7 +132,7 @@ public class GameServiceImpl implements GameService {
 
         List<DailyPrize> filtered = prizes.stream()
                 .filter(p -> p.getPrize().getPrizeRank() == rank)
-                .filter(p -> p.getAvailableQuantity() > 0).collect(Collectors.toList());
+                .filter(p -> p.getAvailableQuantity() > 0).toList();
 
         if (filtered.isEmpty()) {
             throw new CommonException("ERR_500", "No Prize Left For Rank " + rank);

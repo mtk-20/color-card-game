@@ -1,7 +1,12 @@
 package com.mtk.color_card_game.service.impl;
 
+import com.mtk.color_card_game.common.exception.CommonException;
 import com.mtk.color_card_game.dto.GameRequest;
 import com.mtk.color_card_game.dto.GameResponse;
+import com.mtk.color_card_game.entity.DailyPrize;
+import com.mtk.color_card_game.repo.DailyPrizeRepo;
+import com.mtk.color_card_game.repo.PrizeRepo;
+import com.mtk.color_card_game.repo.UserRepo;
 import com.mtk.color_card_game.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -20,11 +22,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GameServiceImpl implements GameService {
 
-    /*private final UserRepo userRepo;
+    private final UserRepo userRepo;
     private final PrizeRepo prizeRepo;
-    private final DailyPrizeRepo dailyPrizeRepo;*/
+    private final DailyPrizeRepo dailyPrizeRepo;
 
-    private final SecureRandom random = new SecureRandom();
+    private final SecureRandom secureRandom = new SecureRandom();
 
     private enum Color {
         ORANGE, GREEN, BLUE
@@ -44,6 +46,17 @@ public class GameServiceImpl implements GameService {
             throw new RuntimeException(e.getMessage());
         }
 
+        List<DailyPrize> prizes = dailyPrizeRepo.findByDay(dayNo);
+        List<DailyPrize> availablePrizes = prizes.stream().filter(a -> a.getAvailableQuantity() > 0).collect(Collectors.toList());
+
+        try {
+            if (availablePrizes.isEmpty()) {
+                log.info("No Prizes For Today.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
         Color userColor;
         try {
             userColor = Color.valueOf(request.color().toUpperCase());
@@ -51,16 +64,16 @@ public class GameServiceImpl implements GameService {
             throw new RuntimeException("Invalid color. Choose ORANGE, GREEN, or BLUE.");
         }
 
-        boolean is311 = random.nextBoolean();
-        String patternTYpe;
+        boolean is311 = secureRandom.nextBoolean();
+        String patternType;
 
         List<Color> showCards = new ArrayList<>();
         List<Color> allColorCards = new ArrayList<>(Arrays.asList(Color.ORANGE, Color.BLUE, Color.GREEN));
 
-        Collections.shuffle(allColorCards, random);
+        Collections.shuffle(allColorCards, secureRandom);
 
         if (is311) {
-            patternTYpe = "3-1-1";
+            patternType = "3-1-1";
 
             Color three = allColorCards.get(0);
             Color one = allColorCards.get(1);
@@ -70,7 +83,7 @@ public class GameServiceImpl implements GameService {
             showCards.add(one);
             showCards.add(otherOne);
         } else {
-            patternTYpe = "2-1-1";
+            patternType = "2-2-1";
 
             Color one = allColorCards.get(0);
             Color two = allColorCards.get(1);
@@ -80,33 +93,50 @@ public class GameServiceImpl implements GameService {
             showCards.addAll(Collections.nCopies(2, two));
             showCards.addAll(Collections.nCopies(2, otherTwo));
         }
-        Collections.shuffle(showCards, random);
+        Collections.shuffle(showCards, secureRandom);
 
         long count = showCards.stream().filter(s -> s == userColor).count();
-
         int prizeRank;
-        String description;
 
         if (count == 3) {
             prizeRank = 1;
-            description = "Congratulation. You Have Won A RANK [1] Prize.";
         } else if (count == 2) {
             prizeRank = 2;
-            description = "Congratulation. You Have Won A RANK [2] Prize.";
         } else {
             prizeRank = 3;
-            description = "Congratulation. You Have Won A RANK [3] Prize.";
         }
 
+        DailyPrize chosenPrize = pickRandomPrize(availablePrizes, prizeRank);
+        chosenPrize.setAvailableQuantity(chosenPrize.getAvailableQuantity() - 1);
+        dailyPrizeRepo.save(chosenPrize);
+
+        String description = "Congratulations! You won Rank [" + prizeRank + "] Prize. Prize ID: "
+                + chosenPrize.getPrize().getId() + " "
+                + chosenPrize.getPrize().getPrizeName();
+
         return new GameResponse(
-                patternTYpe,
+                patternType,
                 showCards.stream().map(Enum::name).collect(Collectors.toList()),
                 prizeRank,
-                description);
+                description
+        );
+    }
+
+    private DailyPrize pickRandomPrize(List<DailyPrize> prizes, int rank) {
+        Random random = new Random();
+
+        List<DailyPrize> filtered = prizes.stream()
+                .filter(p -> p.getPrize().getPrizeRank() == rank)
+                .filter(p -> p.getAvailableQuantity() > 0).collect(Collectors.toList());
+
+        if (filtered.isEmpty()) {
+            throw new CommonException("ERR_500", "No Prize Left For Rank " + rank);
+        }
+        return filtered.get(random.nextInt(filtered.size()));
     }
 
     private int getEventDay(LocalDate day) {
-        LocalDate day1 = LocalDate.of(2025, 12, 5);
+        LocalDate day1 = LocalDate.of(2025, 12, 8);
         LocalDate day2 = day1.plusDays(1);
         LocalDate day3 = day2.plusDays(1);
 

@@ -14,6 +14,6 @@ public interface DailyPrizeRepo extends JpaRepository<DailyPrize, Long> {
     @Query("SELECT p FROM DailyPrize p WHERE p.day = :day AND p.prize.id = :prizeId")
     List<DailyPrize> findByDayAndPrizeId(@Param("day") int day, @Param("prizeId") Long prizeId);
 
-    @Query("SELECT p FROM DailyPrize p WHERE p.day = :day AND p.prize.rank = :rank")
+    @Query("SELECT p FROM DailyPrize p WHERE p.day = :day AND p.prize.prizeRank = :rank")
     List<DailyPrize> findByDayAndRank(@Param("day") int day, @Param("rank") int rank);
 }

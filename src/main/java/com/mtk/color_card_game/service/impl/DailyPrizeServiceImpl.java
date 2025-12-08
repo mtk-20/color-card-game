@@ -20,6 +20,7 @@ public class DailyPrizeServiceImpl implements DailyPrizeService {
     public List<DailyPrize> getByDayAndPrizeId(int day, long id) {
         log.info("Day {} And Prize Id {}", day, id);
         log.info("Daily Prize By Id : {}", repo.findByDayAndPrizeId(day, id).size());
+        log.info(" --------------------- --------------------- ");
         return repo.findByDayAndPrizeId(day, id);
     }
 
@@ -27,6 +28,7 @@ public class DailyPrizeServiceImpl implements DailyPrizeService {
     public List<DailyPrize> getByDayAndPrizeRank(int day, int rank) {
         log.info("Day {} And Rank {}", day, rank);
         log.info("Daily Prize By Rank : {}", repo.findByDayAndRank(day, rank).size());
+        log.info(" ------------------- ----------------------- ");
         return repo.findByDayAndRank(day, rank);
     }
 }

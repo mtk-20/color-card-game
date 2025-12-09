@@ -21,33 +21,25 @@ public class DailyPrizeServiceImpl implements DailyPrizeService {
 
     @Override
     public List<NormalDailyPrize> getByDayAndPrizeIdNormal(int day, long id) {
-        log.info("Normal - Day {} And Prize Id {}", day, id);
-        log.info("Normal Daily Prize By Id : {}", normalRepo.findByDayAndPrizeId(day, id).size());
-        log.info(" --------------------- --------------------- ");
+        log.info("Normal - Day {} / Prize Id {} / Size {}", day, id, normalRepo.findByDayAndPrizeId(day, id).size());
         return normalRepo.findByDayAndPrizeId(day, id);
     }
 
     @Override
     public List<NormalDailyPrize> getByDayAndPrizeRankNormal(int day, int rank) {
-        log.info("Normal - Day {} And Rank {}", day, rank);
-        log.info("Normal Daily Prize By Rank : {}", normalRepo.findByDayAndRank(day, rank).size());
-        log.info(" ------------------- ----------------------- ");
+        log.info("Normal - Day {} / Rank {} / Size {}", day, rank, normalRepo.findByDayAndRank(day, rank).size());
         return normalRepo.findByDayAndRank(day, rank);
     }
 
     @Override
     public List<VipDailyPrize> getByDayAndPrizeIdVip(int day, long id) {
-        log.info("Vip - Day {} And Prize Id {}", day, id);
-        log.info("Vip Daily Prize By Id : {}", vipRepo.findByDayAndPrizeId(day, id).size());
-        log.info(" -------------------- - --------------------- ");
+        log.info("Vip - Day {} / Prize Id {} / Size {}", day, id, vipRepo.findByDayAndPrizeId(day, id).size());
         return vipRepo.findByDayAndPrizeId(day, id);
     }
 
     @Override
     public List<VipDailyPrize> getByDayAndPrizeRankVip(int day, int rank) {
-        log.info("Vip - Day {} And Rank {}", day, rank);
-        log.info("Vip Daily Prize By Rank : {}", vipRepo.findByDayAndRank(day, rank).size());
-        log.info(" ------------------- - ---------------------- ");
+        log.info("Vip - Day {} / Rank {} / Size {}", day, rank, vipRepo.findByDayAndRank(day, rank).size());
         return vipRepo.findByDayAndRank(day, rank);
     }
 }

@@ -66,7 +66,7 @@ public class GameServiceImpl implements GameService {
         try {
             userColor = Color.valueOf(request.getColor().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid color. Choose ORANGE, GREEN, or BLUE.");
+            throw new CommonException("ERR_400", "Invalid color. Choose ORANGE, GREEN, or BLUE.");
         }
 
         boolean is311 = random.nextBoolean();
@@ -156,7 +156,7 @@ public class GameServiceImpl implements GameService {
         try {
             userColor = Color.valueOf(request.getColor().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Invalid color. Choose ORANGE, GREEN, or BLUE.");
+            throw new CommonException("ERR_400","Invalid color. Choose ORANGE, GREEN, or BLUE.");
         }
 
         boolean is311 = random.nextBoolean();

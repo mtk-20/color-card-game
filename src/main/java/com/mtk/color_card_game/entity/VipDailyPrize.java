@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "DAILY_PRIZE")
-public class DailyPrize {
+@Table(name = "VIP_PRIZES")
+public class VipDailyPrize {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

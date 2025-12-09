@@ -1,7 +1,8 @@
 package com.mtk.color_card_game.controller;
 
 import com.mtk.color_card_game.common.response.ResponseFactory;
-import com.mtk.color_card_game.entity.DailyPrize;
+import com.mtk.color_card_game.entity.NormalDailyPrize;
+import com.mtk.color_card_game.entity.VipDailyPrize;
 import com.mtk.color_card_game.service.DailyPrizeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,27 +22,51 @@ public class DailyPrizeController {
     private final DailyPrizeService service;
     private final ResponseFactory factory;
 
-    @GetMapping("/by-prize-id")
-    public ResponseEntity<?> handleGetByPrizeId(@RequestParam int day, @RequestParam long id) {
-        List<DailyPrize> byDayAndPrizeId = service.getByDayAndPrizeId(day, id);
+    @GetMapping("/normal/by-prize-id")
+    public ResponseEntity<?> handleGetByPrizeIdNormal(@RequestParam int day, @RequestParam long id) {
+        List<NormalDailyPrize> prizeIdNormal = service.getByDayAndPrizeIdNormal(day, id);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                byDayAndPrizeId,
+                prizeIdNormal,
                 "200",
-                "Day [" + day + "] Prizes With Id " + id
+                "Day [" + day + "] Normal Prizes With Id " + id
         );
     }
 
-    @GetMapping("/by-rank")
-    public ResponseEntity<?> handleGetByRank(@RequestParam int day, @RequestParam int rank) {
-        List<DailyPrize> byDayAndPrizeRank = service.getByDayAndPrizeRank(day, rank);
+    @GetMapping("/normal/by-rank")
+    public ResponseEntity<?> handleGetByRankNormal(@RequestParam int day, @RequestParam int rank) {
+        List<NormalDailyPrize> prizeRankNormal = service.getByDayAndPrizeRankNormal(day, rank);
 
         return factory.buildSuccess(
                 HttpStatus.OK,
-                byDayAndPrizeRank,
+                prizeRankNormal,
                 "200",
-                "Day [" + day + "] Prizes With Rank " + rank
+                "Day [" + day + "] Normal Prizes With Rank " + rank
+        );
+    }
+
+    @GetMapping("/vip/by-prize-id")
+    public ResponseEntity<?> handleGetByPrizeIdVip(@RequestParam int day, @RequestParam long id) {
+        List<VipDailyPrize> prizeIdVip = service.getByDayAndPrizeIdVip(day, id);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                prizeIdVip,
+                "200",
+                "Day [" + day + "] Vip Prizes With Id " + id
+        );
+    }
+
+    @GetMapping("/vip/by-rank")
+    public ResponseEntity<?> handleGetByRankVip(@RequestParam int day, @RequestParam int rank) {
+        List<VipDailyPrize> prizeRankVip = service.getByDayAndPrizeRankVip(day, rank);
+
+        return factory.buildSuccess(
+                HttpStatus.OK,
+                prizeRankVip,
+                "200",
+                "Day [" + day + "] Vip Prizes With Rank " + rank
         );
     }
 }

@@ -5,5 +5,7 @@ import com.mtk.color_card_game.dto.GameResponse;
 
 public interface GameService {
 
-    GameResponse playGame(GameRequest request);
+    GameResponse vipMode(GameRequest request);
+
+    GameResponse normalMode(GameRequest request);
 }

@@ -1,12 +1,17 @@
 package com.mtk.color_card_game.service;
 
-import com.mtk.color_card_game.entity.DailyPrize;
+import com.mtk.color_card_game.entity.NormalDailyPrize;
+import com.mtk.color_card_game.entity.VipDailyPrize;
 
 import java.util.List;
 
 public interface DailyPrizeService {
 
-    List<DailyPrize> getByDayAndPrizeId(int day, long id);
+    List<NormalDailyPrize> getByDayAndPrizeIdNormal(int day, long id);
 
-    List<DailyPrize> getByDayAndPrizeRank(int day, int rank);
+    List<NormalDailyPrize> getByDayAndPrizeRankNormal(int day, int rank);
+
+    List<VipDailyPrize> getByDayAndPrizeIdVip(int day, long id);
+
+    List<VipDailyPrize> getByDayAndPrizeRankVip(int day, int rank);
 }

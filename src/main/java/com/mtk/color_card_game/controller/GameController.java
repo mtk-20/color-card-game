@@ -17,9 +17,15 @@ public class GameController {
 
     private final GameService service;
 
-    @PostMapping
-    public ResponseEntity<?> handlePlayGame(@RequestBody GameRequest request) {
-        GameResponse response = service.playGame(request);
+    @PostMapping("/normal-mode")
+    public ResponseEntity<?> handleNormalMode(@RequestBody GameRequest request) {
+        GameResponse response = service.normalMode(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/vip-mode")
+    public ResponseEntity<?> handleVipMode(@RequestBody GameRequest request) {
+        GameResponse response = service.vipMode(request);
         return ResponseEntity.ok(response);
     }
 }

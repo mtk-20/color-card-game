@@ -12,8 +12,8 @@ import com.mtk.color_card_game.service.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -26,35 +26,30 @@ public class GameServiceImpl implements GameService {
     private final PrizeRepo prizeRepo;
     private final DailyPrizeRepo dailyPrizeRepo;
 
-    private final SecureRandom secureRandom = new SecureRandom();
+    private final Random random = new Random();
 
     private enum Color {
         ORANGE, GREEN, BLUE
     }
 
     @Override
+    @Transactional
     public GameResponse playGame(GameRequest request) {
 
         LocalDate day = LocalDate.now();
         int dayNo = getEventDay(day);
 
-        try {
-            if (dayNo == -1) {
-                log.info("Event Completed.");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        if (dayNo == -1) {
+            log.info("Event Completed.");
+            throw new CommonException("ERR_404", "The event is currently not running.");
         }
 
         List<DailyPrize> prizes = dailyPrizeRepo.findByDay(dayNo);
         List<DailyPrize> availablePrizes = prizes.stream().filter(a -> a.getAvailableQuantity() > 0).toList();
 
-        try {
-            if (availablePrizes.isEmpty()) {
-                log.info("No Prizes For Today.");
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        if (availablePrizes.isEmpty()) {
+            log.info("No Prizes For Today.");
+            throw new CommonException("ERR_404", "No prizes are available for today's game.");
         }
 
         Color userColor;
@@ -64,13 +59,13 @@ public class GameServiceImpl implements GameService {
             throw new RuntimeException("Invalid color. Choose ORANGE, GREEN, or BLUE.");
         }
 
-        boolean is311 = secureRandom.nextBoolean();
+        boolean is311 = random.nextBoolean();
         String patternType;
 
         List<Color> showCards = new ArrayList<>();
         List<Color> allColorCards = new ArrayList<>(Arrays.asList(Color.ORANGE, Color.BLUE, Color.GREEN));
 
-        Collections.shuffle(allColorCards, secureRandom);
+        Collections.shuffle(allColorCards, random);
 
         if (is311) {
             patternType = "3-1-1";
@@ -93,7 +88,7 @@ public class GameServiceImpl implements GameService {
             showCards.addAll(Collections.nCopies(2, two));
             showCards.addAll(Collections.nCopies(2, otherTwo));
         }
-        Collections.shuffle(showCards, secureRandom);
+        Collections.shuffle(showCards, random);
 
         long count = showCards.stream().filter(s -> s == userColor).count();
         int prizeRank;
@@ -128,7 +123,6 @@ public class GameServiceImpl implements GameService {
     }
 
     private DailyPrize pickRandomPrize(List<DailyPrize> prizes, int rank) {
-        Random random = new Random();
 
         List<DailyPrize> filtered = prizes.stream()
                 .filter(p -> p.getPrize().getPrizeRank() == rank)
@@ -137,6 +131,7 @@ public class GameServiceImpl implements GameService {
         if (filtered.isEmpty()) {
             throw new CommonException("ERR_500", "No Prize Left For Rank " + rank);
         }
+
         return filtered.get(random.nextInt(filtered.size()));
     }
 
@@ -153,6 +148,7 @@ public class GameServiceImpl implements GameService {
 
         if (day.isEqual(day3))
             return 3;
+
         return -1;
     }
 }

@@ -24,65 +24,54 @@ public class CarryOverScheduler {
     @Transactional
     public void carryOverRemainingNormalPrizes() {
 
-        for (int day = 1; day <= 2; day++) {
-            List<NormalDailyPrize> todayLimits = normalDailyPrizeRepo.findByDay(day);
-            List<NormalDailyPrize> nextDayLimits = normalDailyPrizeRepo.findByDay(day + 1);
+        for (int day = 1; day <= 3; day++) {
+            List<NormalDailyPrize> todayLimitsN = normalDailyPrizeRepo.findByDay(day);
+            List<NormalDailyPrize> nextDayLimitsN = normalDailyPrizeRepo.findByDay(day + 1);
 
-            for (NormalDailyPrize qToday : todayLimits) {
-                if (qToday.getAvailableQuantity() <= 0) {
+            List<VipDailyPrize> todayLimitsV = vipDailyPrizeRepo.findByDay(day);
+            List<VipDailyPrize> nextDayLimitsV = vipDailyPrizeRepo.findByDay(day + 1);
+
+            for (NormalDailyPrize todayN : todayLimitsN) {
+                if (todayN.getAvailableQuantity() <= 0) {
                     continue;
                 }
 
-                NormalDailyPrize nextDay = nextDayLimits.stream()
-                        .filter(q -> q.getPrize().getId().equals(qToday.getPrize().getId()))
+                NormalDailyPrize nextDayN = nextDayLimitsN.stream()
+                        .filter(q -> q.getPrize().getId().equals(todayN.getPrize().getId()))
                         .findFirst().orElse(null);
 
-                if (nextDay != null) {
-                    nextDay.setAvailableQuantity(nextDay.getAvailableQuantity() + qToday.getAvailableQuantity());
-                    normalDailyPrizeRepo.save(nextDay);
+                if (nextDayN != null) {
+                    nextDayN.setAvailableQuantity(nextDayN.getAvailableQuantity() + todayN.getAvailableQuantity());
+                    normalDailyPrizeRepo.save(nextDayN);
 
-                    qToday.setAvailableQuantity(0);
-                    normalDailyPrizeRepo.save(qToday);
+                    log.info("Carried over {} units of Normal Prize ID {} from Day {} to Day {}", todayN.getAvailableQuantity(), todayN.getPrize().getId(), day, day + 1);
 
-                    log.info("Carried over {} units of Prize ID {} from Day {} to Day {}",
-                            qToday.getAvailableQuantity(), qToday.getPrize().getId(), day, day + 1);
+                    todayN.setAvailableQuantity(0);
+                    normalDailyPrizeRepo.save(todayN);
                 } else {
-                    log.warn("Prize Name {} found on Day {} but not on Day {}",
-                            qToday.getPrize().getPrizeName(), day, day + 1);
+                    log.warn("Normal Prize Name {} found on Day {} but not on Day {}", todayN.getPrize().getPrizeName(), day, day + 1);
                 }
             }
-        }
-    }
 
-    @Scheduled(cron = "0 0 0 * * ?")
-    @Transactional
-    public void carryOverRemainingVipPrizes() {
-
-        for (int day = 1; day <= 2; day++) {
-            List<VipDailyPrize> todayLimits = vipDailyPrizeRepo.findByDay(day);
-            List<VipDailyPrize> nextDayLimits = vipDailyPrizeRepo.findByDay(day + 1);
-
-            for (VipDailyPrize qToday : todayLimits) {
-                if (qToday.getAvailableQuantity() <= 0) {
+            for (VipDailyPrize todayV : todayLimitsV) {
+                if (todayV.getAvailableQuantity() <= 0) {
                     continue;
                 }
 
-                VipDailyPrize nextDay = nextDayLimits.stream()
-                        .filter(q -> q.getPrize().getId().equals(qToday.getPrize().getId()))
+                VipDailyPrize nextDayV = nextDayLimitsV.stream()
+                        .filter(q -> q.getPrize().getId().equals(todayV.getPrize().getId()))
                         .findFirst().orElse(null);
 
-                if (nextDay != null) {
-                    nextDay.setAvailableQuantity(nextDay.getAvailableQuantity() + qToday.getAvailableQuantity());
-                    vipDailyPrizeRepo.save(nextDay);
+                if (nextDayV != null) {
+                    nextDayV.setAvailableQuantity(nextDayV.getAvailableQuantity() + todayV.getAvailableQuantity());
+                    vipDailyPrizeRepo.save(nextDayV);
 
-                    qToday.setAvailableQuantity(0);
-                    vipDailyPrizeRepo.save(qToday);
+                    log.info("Carried over {} units of Vip Prize ID {} from Day {} to Day {}", todayV.getAvailableQuantity(), todayV.getPrize().getId(), day, day + 1);
 
-                    log.info("Carried over {} units of Prize ID {} from Day {} to Day {}",
-                            qToday.getAvailableQuantity(), qToday.getPrize().getId(), day, day + 1);
+                    todayV.setAvailableQuantity(0);
+                    vipDailyPrizeRepo.save(todayV);
                 } else {
-                    log.warn("Prize Name {} found on Day {} but not on Day {}",
-                            qToday.getPrize().getPrizeName(), day, day + 1);
+                    log.warn("Vip Prize Name {} found on Day {} but not on Day {}", todayV.getPrize().getPrizeName(), day, day + 1);
                 }
             }
         }
